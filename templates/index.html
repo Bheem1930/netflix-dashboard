@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Netflix Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <div class="header">
+        NETFLIX ANALYTICS DASHBOARD
+    </div>
+
+    <div class="kpi-row">
+        <div class="kpi red">
+            <h4>Total Content</h4>
+            <h2>{{ total }}</h2>
+        </div>
+
+        <div class="kpi green">
+            <h4>Total Movies</h4>
+            <h2>{{ movies }}</h2>
+        </div>
+
+        <div class="kpi blue">
+            <h4>Total TV Shows</h4>
+            <h2>{{ shows }}</h2>
+        </div>
+
+        <div class="kpi purple">
+            <h4>Accuracy</h4>
+            <h2>{{ accuracy }}%</h2>
+        </div>
+    </div>
+
+    <div class="charts-row">
+        <div class="chart">
+            <img src="{{ url_for('static', filename='charts/type.png') }}">
+        </div>
+        <div class="chart">
+            <img src="{{ url_for('static', filename='charts/year.png') }}">
+        </div>
+    </div>
+
+    <div class="charts-row">
+        <div class="chart">
+            <img src="{{ url_for('static', filename='charts/country.png') }}">
+        </div>
+        <div class="chart">
+            <img src="{{ url_for('static', filename='charts/genre.png') }}">
+        </div>
+    </div>
+
+    <div class="prediction">
+        <form action="/predict" method="post">
+            <input type="number" name="release_year" placeholder="Release Year" required>
+            <input type="number" name="duration" placeholder="Duration" required>
+            <input type="text" name="rating" placeholder="Rating" required>
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            Prediction: {{ result }}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

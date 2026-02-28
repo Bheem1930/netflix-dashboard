@@ -1,73 +1,122 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Netflix Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem("theme");
+                if (t === "dark") document.documentElement.classList.add("theme-dark");
+            } catch (e) { }
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='charts/style.css') }}">
 </head>
+
 <body>
 
-<div class="dashboard">
+    <div class="dashboard">
 
-    <div class="header">
-        NETFLIX ANALYTICS DASHBOARD
+        <div class="topbar">
+            <div class="header">
+                NETFLIX ANALYTICS DASHBOARD
+            </div>
+
+            <button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false"
+                title="Toggle theme">
+                <span class="theme-toggle__glyph theme-toggle__glyph--sun" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-sun">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M12 19a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z" />
+                        <path
+                            d="M18.313 16.91l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.218 -1.567l.102 .07z" />
+                        <path
+                            d="M7.007 16.993a1 1 0 0 1 .083 1.32l-.083 .094l-.7 .7a1 1 0 0 1 -1.497 -1.32l.083 -.094l.7 -.7a1 1 0 0 1 1.414 0z" />
+                        <path d="M4 11a1 1 0 0 1 .117 1.993l-.117 .007h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z" />
+                        <path d="M21 11a1 1 0 0 1 .117 1.993l-.117 .007h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z" />
+                        <path
+                            d="M6.213 4.81l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.217 -1.567l.102 .07z" />
+                        <path
+                            d="M19.107 4.893a1 1 0 0 1 .083 1.32l-.083 .094l-.7 .7a1 1 0 0 1 -1.497 -1.32l.083 -.094l.7 -.7a1 1 0 0 1 1.414 0z" />
+                        <path
+                            d="M12 2a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z" />
+                        <path d="M12 7a5 5 0 1 1 -4.995 5.217l-.005 -.217l.005 -.217a5 5 0 0 1 4.995 -4.783z" />
+                    </svg>
+                </span>
+                <span class="theme-toggle__glyph theme-toggle__glyph--moon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-moon">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path
+                            d="M12 1.992a10 10 0 1 0 9.236 13.838c.341 -.82 -.476 -1.644 -1.298 -1.31a6.5 6.5 0 0 1 -6.864 -10.787l.077 -.08c.551 -.63 .113 -1.653 -.758 -1.653h-.266l-.068 -.006l-.06 -.002z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <div class="kpi-row">
+            <div class="kpi card red">
+                <h4>Total Content</h4>
+                <h2>{{ total }}</h2>
+            </div>
+
+            <div class="kpi card green">
+                <h4>Total Movies</h4>
+                <h2>{{ movies }}</h2>
+            </div>
+
+            <div class="kpi card blue">
+                <h4>Total TV Shows</h4>
+                <h2>{{ shows }}</h2>
+            </div>
+
+            <div class="kpi card purple">
+                <h4>Accuracy</h4>
+                <h2>{{ accuracy }}%</h2>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart card">
+                <img src="{{ url_for('static', filename='charts/type.png') }}" alt="Content type chart" loading="lazy">
+            </div>
+            <div class="chart card">
+                <img src="{{ url_for('static', filename='charts/year.png') }}" alt="Release year chart" loading="lazy">
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart card">
+                <img src="{{ url_for('static', filename='charts/country.png') }}" alt="Country chart" loading="lazy">
+            </div>
+            <div class="chart card">
+                <img src="{{ url_for('static', filename='charts/genre.png') }}" alt="Genre chart" loading="lazy">
+            </div>
+        </div>
+
+        <div class="prediction">
+            <form action="/predict" method="post">
+                <input type="number" name="release_year" placeholder="Release Year" required>
+                <input type="number" name="duration" placeholder="Duration" required>
+                <input type="text" name="rating" placeholder="Rating" required>
+                <button type="submit">Predict</button>
+            </form>
+
+            {% if result %}
+            <div class="result">
+                Prediction: {{ result }}
+            </div>
+            {% endif %}
+        </div>
+
     </div>
 
-    <div class="kpi-row">
-        <div class="kpi red">
-            <h4>Total Content</h4>
-            <h2>{{ total }}</h2>
-        </div>
-
-        <div class="kpi green">
-            <h4>Total Movies</h4>
-            <h2>{{ movies }}</h2>
-        </div>
-
-        <div class="kpi blue">
-            <h4>Total TV Shows</h4>
-            <h2>{{ shows }}</h2>
-        </div>
-
-        <div class="kpi purple">
-            <h4>Accuracy</h4>
-            <h2>{{ accuracy }}%</h2>
-        </div>
-    </div>
-
-    <div class="charts-row">
-        <div class="chart">
-            <img src="{{ url_for('static', filename='charts/type.png') }}">
-        </div>
-        <div class="chart">
-            <img src="{{ url_for('static', filename='charts/year.png') }}">
-        </div>
-    </div>
-
-    <div class="charts-row">
-        <div class="chart">
-            <img src="{{ url_for('static', filename='charts/country.png') }}">
-        </div>
-        <div class="chart">
-            <img src="{{ url_for('static', filename='charts/genre.png') }}">
-        </div>
-    </div>
-
-    <div class="prediction">
-        <form action="/predict" method="post">
-            <input type="number" name="release_year" placeholder="Release Year" required>
-            <input type="number" name="duration" placeholder="Duration" required>
-            <input type="text" name="rating" placeholder="Rating" required>
-            <button type="submit">Predict</button>
-        </form>
-
-        {% if result %}
-        <div class="result">
-            Prediction: {{ result }}
-        </div>
-        {% endif %}
-    </div>
-
-</div>
-
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>
+
 </html>

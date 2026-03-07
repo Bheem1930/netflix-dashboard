@@ -17,7 +17,6 @@
 </head>
 
 <body>
-
     <div class="dashboard">
 
         <div class="topbar">
@@ -99,21 +98,53 @@
             </div>
         </div>
 
-        <div class="prediction">
-            <form action="/predict" method="post">
-                <input type="number" name="release_year" placeholder="Release Year" required>
-                <input type="number" name="duration" placeholder="Duration" required>
-                <input type="text" name="rating" placeholder="Rating" required>
-                <button type="submit">Predict</button>
-            </form>
+       <div class="prediction">
 
-            {% if result %}
-            <div class="result">
-                Prediction: {{ result }}
-            </div>
-            {% endif %}
-        </div>
+    <form action="/predict" method="post">
+        <input type="number" name="release_year" placeholder="Release Year" required>
+        <input type="number" name="duration" placeholder="Duration" required>
+        <input type="text" name="rating" placeholder="Rating (TV-MA, PG, etc)" required>
+        <button type="submit">Search</button>
+    </form>
 
+    {% if table_data %}
+    <div class="result-table">
+
+        <h3>Matching Titles</h3>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Director</th>
+                    <th>Country</th>
+                    <th>Year</th>
+                    <th>Rating</th>
+                    <th>Duration</th>
+                    <th>Genre</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in table_data %}
+                <tr>
+                    <td>{{ row.title }}</td>
+                    <td>{{ row.type }}</td>
+                    <td>{{ row.director }}</td>
+                    <td>{{ row.country }}</td>
+                    <td>{{ row.release_year }}</td>
+                    <td>{{ row.rating }}</td>
+                    <td>{{ row.duration }}</td>
+                    <td>{{ row.listed_in }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+    {% endif %}
     </div>
 
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>

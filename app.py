@@ -8,8 +8,6 @@ import os
 
 app = Flask(__name__)
 
-
-
 df = pd.read_csv("netflix.csv")
 
 df.fillna({
@@ -34,9 +32,13 @@ if not os.path.exists("static/charts"):
 
 plt.style.use('dark_background')
 
+# ==============================
+# CREATE CHARTS
+# ==============================
+
 def create_charts():
 
-   
+  
     plt.figure(figsize=(6,4))
     counts = df['type'].value_counts()
     bars = plt.bar(counts.index, counts.values,
@@ -55,7 +57,7 @@ def create_charts():
     plt.savefig("static/charts/type.png")
     plt.close()
 
-
+   
     plt.figure(figsize=(6,4))
     year_counts = df['year_added'].value_counts().sort_index()
     plt.plot(year_counts.index, year_counts.values,
@@ -68,20 +70,27 @@ def create_charts():
     plt.savefig("static/charts/year.png")
     plt.close()
 
-
     
+
     plt.figure(figsize=(6,4))
-    top_countries = df['country'].value_counts().head(10)
+
+    country_data = df['country'].dropna()
+    country_data = country_data[country_data != "Unknown"]
+    country_data = country_data.str.split(',').explode()
+    country_data = country_data.str.strip()
+    top_countries = country_data.value_counts().head(10)
     bars = plt.barh(top_countries.index, top_countries.values,
                     color='#FFA500')
+
     plt.title("Top 10 Countries", fontsize=14, fontweight='bold')
     plt.xlabel("Number of Titles")
+
     plt.gca().invert_yaxis()
     plt.grid(axis='x', linestyle='--', alpha=0.3)
 
     for bar in bars:
         width = bar.get_width()
-        plt.text(width, bar.get_y() + bar.get_height()/2,
+        plt.text(width + 5, bar.get_y() + bar.get_height()/2,
                  int(width), va='center')
 
     plt.tight_layout()
@@ -92,8 +101,10 @@ def create_charts():
     plt.figure(figsize=(6,4))
     genre = df['listed_in'].str.split(',').explode()
     top_genres = genre.value_counts().head(10)
+
     bars = plt.bar(top_genres.index, top_genres.values,
                    color='#8A2BE2')
+
     plt.title("Top 10 Genres", fontsize=14, fontweight='bold')
     plt.xticks(rotation=45, ha='right')
     plt.ylabel("Count")
@@ -110,6 +121,10 @@ def create_charts():
 
 create_charts()
 
+# ==============================
+# MACHINE LEARNING
+# ==============================
+
 le = LabelEncoder()
 df['rating_encoded'] = le.fit_transform(df['rating'])
 
@@ -124,7 +139,6 @@ model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
 accuracy = round(model.score(X_test, y_test) * 100, 2)
-
 
 
 total_content = len(df)
@@ -148,23 +162,36 @@ def predict():
         duration = int(request.form['duration'])
         rating = request.form['rating']
 
-        if rating in le.classes_:
-            rating_encoded = le.transform([rating])[0]
-        else:
-            rating_encoded = 0
+        results = df[
+            (df['release_year'] == release_year) &
+            (df['duration'] >= duration) &
+            (df['rating'] == rating)
+        ]
 
-        prediction = model.predict([[release_year, duration, rating_encoded]])
-        result = prediction[0]
+        results = results.head(10)
+
+        table_data = results[[
+            'title',
+            'type',
+            'director',
+            'country',
+            'release_year',
+            'rating',
+            'duration',
+            'listed_in'
+        ]].to_dict(orient='records')
 
     except:
-        result = "Invalid Input"
+        table_data = []
 
-    return render_template("index.html",
-                           result=result,
-                           total=total_content,
-                           movies=total_movies,
-                           shows=total_shows,
-                           accuracy=accuracy)
+    return render_template(
+        "index.html",
+        table_data=table_data,
+        total=total_content,
+        movies=total_movies,
+        shows=total_shows,
+        accuracy=accuracy
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

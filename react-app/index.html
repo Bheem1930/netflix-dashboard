@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Netflix Analysis Dashboard</title>
+    <script>
+      (function () {
+        const storageKey = "theme";
+        const classNameDark = "dark";
+        const classNameLight = "light";
+
+        function getSystemTheme() {
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? classNameDark
+            : classNameLight;
+        }
+
+        const savedTheme = localStorage.getItem(storageKey);
+        const theme =
+          savedTheme === "light" || savedTheme === "dark"
+            ? savedTheme
+            : getSystemTheme();
+
+        document.documentElement.classList.remove(
+          classNameLight,
+          classNameDark,
+        );
+        document.documentElement.classList.add(theme);
+      })();
+    </script>
+  </head>
+  <body class="font-sans">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -39,7 +39,10 @@ export default function PredictionPage() {
     country: "",
     release_year: "",
   });
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(() => {
+    const stored = localStorage.getItem("predictions");
+    return stored ? JSON.parse(stored) : [];
+  });
   const [loading, setLoading] = useState(false);
   const [futureData, setFutureData] = useState(null);
   const [futureYears, setFutureYears] = useState(5);
@@ -50,6 +53,15 @@ export default function PredictionPage() {
   const tableRef = useRef(null);
   const futureRef = useRef(null);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem("predictions", JSON.stringify(results));
+  }, [results]);
+
+  const deletePrediction = (index) => {
+    const updated = results.filter((_, i) => i !== index);
+    setResults(updated);
+  };
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -70,26 +82,6 @@ export default function PredictionPage() {
         { y: 0, opacity: 1, duration: 0.4 },
         "-=0.2",
       );
-  }, []);
-
-  // Fetch future rating trends
-  const fetchFutureTrends = async () => {
-    setLoadingFuture(true);
-    try {
-      const res = await fetch(
-        `http://localhost:5000/future-rating-trends?years=${futureYears}`,
-      );
-      const d = await res.json();
-      setFutureData(d);
-    } catch {
-      setFutureData(null);
-    } finally {
-      setLoadingFuture(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchFutureTrends();
   }, []);
 
   const handleChange = (e) =>
@@ -518,6 +510,7 @@ export default function PredictionPage() {
                     "Year",
                     "Predicted Rating",
                     "Confidence",
+                    "Action",
                   ].map((h) => (
                     <th
                       key={h}
@@ -583,6 +576,14 @@ export default function PredictionPage() {
                       ) : (
                         <span className="text-[9px] text-neutral-400">—</span>
                       )}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <button
+                        onClick={() => deletePrediction(i)}
+                        className="px-2 py-1 text-[10px] rounded-md bg-red-600 text-white hover:bg-red-700 transition"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

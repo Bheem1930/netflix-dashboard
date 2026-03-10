@@ -29,11 +29,7 @@ df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
 df['year_added'] = df['date_added'].dt.year
 plt.style.use('dark_background')
 
-
-# ─────────────────────────────────────────
 # CHARTS
-# ─────────────────────────────────────────
-
 @app.route("/")
 def home():
     return "Streaming Analytics API Running"
@@ -132,11 +128,9 @@ def stats():
 
 
 # DATA PREP
-
-# Keep a copy with original ratings for charts/trends before we filter
 df_raw = df.copy()
 
-# Remove rows where rating column has duration values (data error)
+# Remove rows where rating column has duration values
 df = df[~df['rating'].isin(['74 min', '84 min', '66 min'])]
 
 # Valid real ratings to predict
@@ -145,7 +139,7 @@ VALID_RATINGS = ["TV-MA", "TV-14", "TV-PG", "PG-13", "R", "PG",
 df = df[df["rating"].isin(VALID_RATINGS)]
 df["country"] = df["country"].fillna("Unknown")
 
-# Group mapping (for future trends chart only)
+# Group mapping
 rating_group_map = {
     "TV-MA": "Mature", "NC-17": "Mature", "NR": "Mature", "UR": "Mature",
     "TV-14": "Mature", "R": "Mature", "PG-13": "Mature",
@@ -159,7 +153,7 @@ data = df[[
     "country", "release_year", "rating", "type"
 ]].dropna().copy()
 
-# ─── Feature engineering ───
+# Feature engineering
 data["dur_num"]  = data["duration"].str.extract(r"(\d+)").astype(float)
 data["dur_num"]  = data["dur_num"].fillna(data["dur_num"].median())
 data["is_movie"] = (data["type"] == "Movie").astype(int)
@@ -224,8 +218,6 @@ def make_X(df_sub):
     ])
 
 
-# MULTI-CLASS TRAINING (real ratings, balanced)
-
 # Encode the real rating labels
 rating_encoder = LabelEncoder()
 data["rating_enc"] = rating_encoder.fit_transform(data["rating"])
@@ -241,7 +233,7 @@ rating_counts = data["rating"].value_counts()
 valid_for_train = rating_counts[rating_counts >= 6].index
 data_filtered = data[data["rating"].isin(valid_for_train)].copy()
 
-# ─── Balance the dataset by downsampling majority classes ───
+# Balance the dataset by downsampling majority classes
 min_class_size = data_filtered["rating"].value_counts().min()
 # Use median class size as target — big enough to learn, small enough to balance
 median_size = int(data_filtered["rating"].value_counts().median())

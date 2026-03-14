@@ -260,12 +260,12 @@ export default function PredictionPage() {
               {[
                 {
                   target: "TV-MA",
-                  listed_in: "Crime TV Shows, Thrillers",
+                  listed_in: "TV Dramas, Romantic TV Shows",
                   duration: "1 Season",
                   country: "United States",
                   release_year: "2021",
                   description:
-                    "A violent drug kingpin battles rival gangs and corrupt cops in a gritty city underworld",
+                    "A high school teen navigates love, friendship and drama while hiding a secret from her family",
                 },
                 {
                   target: "R",
@@ -278,12 +278,12 @@ export default function PredictionPage() {
                 },
                 {
                   target: "TV-14",
-                  listed_in: "TV Dramas, Romantic TV Shows",
+                  listed_in: "TV Dramas, Teen TV Shows",
                   duration: "2 Seasons",
                   country: "United States",
-                  release_year: "2021",
+                  release_year: 2021,
                   description:
-                    "A high school teen navigates love, friendship and drama while hiding a secret from her family",
+                    "Teenagers at a competitive high school navigate friendships, relationships, and personal challenges while preparing for their future.",
                 },
                 {
                   target: "PG-13",

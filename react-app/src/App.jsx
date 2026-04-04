@@ -7,8 +7,22 @@ import ReleaseTrend from "./pages/ReleaseTrend";
 import TypeDistribution from "./pages/TypeDistribution";
 import RatingDistribution from "./pages/RatingDistribution";
 import PredictionPage from "./pages/PredictionPage";
+import { useEffect } from "react";
+import { useTheme } from "./context/theme";
 
 function App() {
+  const { dark, setDark } = useTheme();
+  useEffect(() => {
+    const handleKeyClick = (e) => {
+      if (e.key === "d" || e.key.d === "D") {
+        setDark(!dark);
+      }
+    };
+    window.addEventListener("keydown", handleKeyClick);
+    return () => {
+      window.removeEventListener("keydown", handleKeyClick);
+    };
+  }, [dark, setDark]);
   return (
     <>
       <Routes>

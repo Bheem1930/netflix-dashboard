@@ -91,7 +91,7 @@ const Sidebar = () => {
       ref={sidebarRef}
       className={`
         ${sidebarOpen ? "w-52" : "w-[52px]"}
-        transition-all duration-300 ease-in-out
+         transition-all duration-300 ease-in-out
         border-r border-neutral-200 dark:border-neutral-800
         flex flex-col sticky top-0 h-screen shrink-0
         bg-neutral-50 dark:bg-neutral-950

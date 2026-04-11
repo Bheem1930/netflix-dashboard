@@ -107,7 +107,20 @@ export default function Dashboard() {
   }, []);
 
   const handleThemeToggle = () => {
-    setDark(!dark);
+    const isDark = document.documentElement.classList.contains("dark");
+    const newTheme = !isDark;
+
+    const switchTheme = () => {
+      setDark(newTheme);
+    };
+
+    if (!document.startViewTransition) {
+      switchTheme();
+    } else {
+      document.startViewTransition(() => {
+        switchTheme();
+      });
+    }
   };
 
   const handleKpiEnter = (el) =>
@@ -222,7 +235,7 @@ export default function Dashboard() {
                 <img
                   src={chart.src}
                   alt={chart.alt}
-                  className="w-full rounded-lg block"
+                  className="w-full rounded-lg block select-none"
                 />
               </div>
             </div>

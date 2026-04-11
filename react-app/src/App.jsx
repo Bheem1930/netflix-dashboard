@@ -11,18 +11,31 @@ import { useEffect } from "react";
 import { useTheme } from "./context/theme";
 
 function App() {
-  const { dark, setDark } = useTheme();
+  const { setDark } = useTheme();
+  const toggleTheme = () => {
+    const switchTheme = () => setDark((prev) => !prev);
+
+    if (!document.startViewTransition) {
+      switchTheme();
+    } else {
+      document.startViewTransition(() => {
+        switchTheme();
+      });
+    }
+  };
+
   useEffect(() => {
     const handleKeyClick = (e) => {
-      if (e.key === "d" || e.key.d === "D") {
-        setDark(!dark);
+      if (e.key === "d" || e.key === "D") {
+        toggleTheme();
       }
     };
+
     window.addEventListener("keydown", handleKeyClick);
     return () => {
       window.removeEventListener("keydown", handleKeyClick);
     };
-  }, [dark, setDark]);
+  }, []);
   return (
     <>
       <Routes>

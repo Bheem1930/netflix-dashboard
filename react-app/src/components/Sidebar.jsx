@@ -100,13 +100,15 @@ const Sidebar = () => {
       {/* Header */}
       <div
         className={`
-        flex items-center h-16 px-3 border-b border-neutral-200 dark:border-neutral-800 shrink-0
+        flex items-center h-14 px-3 border-b border-neutral-200 dark:border-neutral-800 shrink-0
         ${sidebarOpen ? "justify-between" : "justify-center"}
       `}
       >
         {sidebarOpen && (
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span className="text-base leading-none">◈</span>
+          <div className="inline-flex items-center justify-center gap-2 overflow-hidden">
+            <span className="text-base leading-none flex items-center justify-center">
+              ◈
+            </span>
             <span className="text-[11px] font-black tracking-[0.15em] uppercase whitespace-nowrap text-neutral-900 dark:text-neutral-100">
               Dashboard
             </span>
